@@ -91,7 +91,9 @@ enum HaveNew { DontHaveNew = false, DoHaveNew = true };
 
 struct SideTable {
     spinlock_t slock;
+    // 引用计数
     RefcountMap refcnts;
+    // 弱引用表，Hash表
     weak_table_t weak_table;
 
     SideTable() {
@@ -329,6 +331,7 @@ storeWeak(id *location, objc_object *newObj)
 
     // Assign new value, if any.
     if (haveNew) {
+        // 注册弱引用
         newObj = (objc_object *)
             weak_register_no_lock(&newTable->weak_table, (id)newObj, location, 
                                   crashIfDeallocating);
@@ -400,7 +403,7 @@ objc_storeWeakOrNil(id *location, id newObj)
  * This function IS NOT thread-safe with respect to concurrent 
  * modifications to the weak variable. (Concurrent weak clear is safe.)
  *
- * @param location Address of __weak ptr. 
+ * @param location Address of __weak ptr.  弱引用指针的地址
  * @param newObj Object ptr. 
  */
 id

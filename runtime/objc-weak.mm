@@ -425,6 +425,7 @@ weak_register_no_lock(weak_table_t *weak_table, id referent_id,
     }
 
     // now remember it and where it is being stored
+    // 本质上插入弱引用表中的数据就是 weak_entry_t
     weak_entry_t *entry;
     if ((entry = weak_entry_for_referent(weak_table, referent))) {
         append_referrer(entry, referrer);
